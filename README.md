@@ -3,7 +3,7 @@ Referências Web
 
 Organização por semanas:
 
-- Semana 1:
+- Semana 1: \n
 Reunião com Atos
 
 - Semana 2:
