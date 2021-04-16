@@ -16,4 +16,4 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(authRoutes)
 app.use(backOfficeRoutes)
 
-app.listen(3000);
+module.exports = app;

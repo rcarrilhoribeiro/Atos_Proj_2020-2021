@@ -1,35 +1,17 @@
 const express = require('express');
 
+const userController = require('../controllers/userController');
+
 const router = express.Router();
 
-router.get('/home', (req, res) => {
-    res.render('backoffice/index', {
-        pageTitle: 'Home',
-        path: '/home'
-    })
-})
+router.get('/home', userController.getHomePage)
 
-router.get('/users', (req, res) => {
-    res.render('backoffice/users', {
-        pageTitle: 'Users',
-        path: '/users',
-        users: []
-    })
-})
+router.get('/users', userController.getUsersPage)
 
-router.post('/users', (req, res) => {
-    res.redirect('/home')
-})
+router.post('/users', userController.postUsers)
 
-router.get('/projects', (req, res) => {
-    res.render('backoffice/projects', {
-        pageTitle: 'Projects',
-        path: '/projects'
-    })
-})
+router.get('/projects', userController.getProjectsPage)
 
-router.post('/projects', (req, res) => {
-    res.redirect('/home')
-})
+router.post('/projects', userController.postProjects)
 
 module.exports = router;
