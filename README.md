@@ -3,12 +3,12 @@ Referências Web
 
 Organização por semanas:
 
-- Semana 1: \n
-Reunião com Atos
+- Semana 1:
+Reunião com Atos;
 
 - Semana 2:
-Login Authentication
-EJS Pages
-CRUD ops with user
+Login Authentication;
+EJS Pages;
+CRUD ops with user;
 
 
