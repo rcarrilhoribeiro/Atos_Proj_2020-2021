@@ -1,0 +1,60 @@
+<%- include('../includes/head.ejs') %>
+
+    </head>
+
+    <body>
+    <%- include('../includes/navigation.ejs') %>
+    <main>
+        <h3>Create User</h3>
+        <div class="box-form">
+            <form action="/users/create-user", method="POST">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                    <label for="inputEmail4">Email</label>
+                    <input type="email" name="email" class="form-control" id="inputEmail4" placeholder="User's email">
+                    </div>
+                    <div class="form-group col-md-6">
+                    <label>Name</label>
+                    <input type="text" name="name" class="form-control" id="inputPassword4" placeholder="User's name">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                    <label >Password</label>
+                    <input id="password" type="password" name="password1" class="form-control" onchange='check_pass();'>
+                    </div>
+                    <div class="form-group col-md-4">
+                    <label>Re type Password</label>
+                    <input id="confirm_password" type="password" name="password2" class="form-control" onchange='check_pass();'>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Role of User</label>
+                        <select name="role" class="form-control category-select" id="exampleFormControlSelect1">
+                            <option>Admin</option>
+                            <option>Internal</option>
+                            <option>Basic</option>
+                        </select>
+                    </div>
+                    
+                </div>
+                <p id="passP" hidden>Passwords do not match</p>
+                <button id="submit" onsubmit="check_pass()" type="submit" class="btn btn-primary" disabled>Create User</button>
+            </form>
+        </main>
+    </body>
+</html>
+
+<script>
+   function check_pass() {
+    if (document.getElementById('password').value == document.getElementById('confirm_password').value) {
+        document.getElementById('submit').disabled = false;
+        document.getElementById('passP').hidden = true
+    } else {
+        document.getElementById('submit').disabled = true;
+        document.getElementById('passP').hidden = false
+        document.getElementById('passP').style.color = 'red'
+    }
+}
+
+</script>
