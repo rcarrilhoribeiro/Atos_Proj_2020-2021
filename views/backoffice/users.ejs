@@ -1,24 +1,24 @@
 <%- include('../includes/head.ejs') %>
-    
-</head>
 
-<body>
+  </head>
+
+  <body>
     <%- include('../includes/navigation.ejs') %>
-    <main>
+      <main>
         <h3>Search Users</h3>
         <div class="box-form">
-            <form action="/projects", method="POST">
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <label for="inputEmail4">Email</label>
-                    <input type="email" class="form-control" id="inputEmail4" placeholder="user@atos.pt">
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="inputPassword4">Name</label>
-                    <input type="email" class="form-control" id="inputPassword4" placeholder="Rodrigo C. Ribeiro">
-                  </div>
-                </div>
-                <!-- <div class="form-group">
+          <form action="/users" , method="POST">
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="inputEmail4">Email</label>
+                <input type="email" name="email" class="form-control" id="inputEmail4" placeholder="User's email">
+              </div>
+              <div class="form-group col-md-6">
+                <label>Name</label>
+                <input type="text" name="name" class="form-control" id="inputPassword4" placeholder="User's name">
+              </div>
+            </div>
+            <!-- <div class="form-group">
                   <label for="inputAddress">Address</label>
                   <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
                 </div>
@@ -51,17 +51,72 @@
                     </label>
                   </div>
                 </div> -->
-                <button type="submit" class="btn btn-primary">Search</button>
-                <a href="/home" class="btn btn-secondary">Create User</a>
-              </form>
-              <div class="showResults">
-                <% if(users) { %>
-                    <% for (let user of users) { %>
-                        
-                    <% } %>
-
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a href="/home" class="btn btn-secondary">Create User</a>
+          </form>
+          <div class="showResults">
+                <% if(users) { let c = 0%>
+                      <div class="results">
+                        <div class="container">
+                          <div class="row">
+                            <div class="col-md-12">
+                              <div class="card">
+                                <div class="card-body">
+                                  <h5 class="card-title text-uppercase mb-0">Manage Users</h5>
+                                </div>
+                                <div class="table-responsive">
+                                  <table class="table no-wrap user-table mb-0">
+                                    <thead>
+                                      <tr>
+                                        <th scope="col" class="border-0 text-uppercase font-medium pl-4">#</th>
+                                        <th scope="col" class="border-0 text-uppercase font-medium">Name</th>
+                                        <th scope="col" class="border-0 text-uppercase font-medium">Email</th>
+                                        <th scope="col" class="border-0 text-uppercase font-medium">Added</th>
+                                        <th scope="col" class="border-0 text-uppercase font-medium">Category</th>
+                                        <th scope="col" class="border-0 text-uppercase font-medium">Manage</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <% for (let user of users) { c++ %>
+                                        <tr>
+                                          <td class="pl-4"><%= c%></td>
+                                          <td>
+                                            <h5 class="font-medium mb-0"><%=user.name%></h5>
+                                          </td>
+                                          <td>
+                                            <span class="text-muted"><%=user.email%></span><br>
+                                          </td>
+                                          <td>
+                                            <span class="text-muted"><%=user.date%></span>
+                                          </td>
+                                          <td>
+                                            <!-- <select class="form-control category-select" id="exampleFormControlSelect1">
+                                              <option>Admin</option>
+                                              <option>Internal</option>
+                                              <option>Basic</option>
+                                            </select> -->
+                                            <span class="text-muted"><%=user.role%></span>
+                                          </td>
+                                          <td>
+                                            <form method="POST" action=""><button type="submit" title="EDIT" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2"><i
+                                              class="fas fa-edit"></i> </button>
+                                            </form>
+                                            <form method="POST" action=""><button type="submit" title="DELETE" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2"><i
+                                              class="fas fa-trash"></i> </button></form>
+                                          </td>
+                                        </tr>
+                                      <% } %>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                 <% } %>
               </div>
-        </div>
-    </main>
-</body>
+          
+
+      </main>
+  </body>
