@@ -20,9 +20,9 @@ exports.getUsersPage = (req, res) => {
 }
 
 exports.postUsers = (req, res) => {
-    const {email} = req.body
+    const {email, name} = req.body
 
-    userUtil.findUser(email)
+    userUtil.findUser(email, name)
     .then(result => {
         console.log(result);
         if(result.status === "success"){
@@ -31,7 +31,7 @@ exports.postUsers = (req, res) => {
             res.render('backoffice/users', {
                 pageTitle: 'Users',
                 path: '/users',
-                users: [result.user],
+                users: result.users,
                 success: undefined
             })
         }else{

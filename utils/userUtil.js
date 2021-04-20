@@ -17,25 +17,25 @@ exports.deleteUser = async (id) => {
     }
 };
 
-exports.findUser = async (email) => {
-    try {
-      const user = await User.findOne({ email: email });
-      console.log(user);
-      if(user){
-          return {
-            status: "success",
-            message: "",
-            user,
-        };
-      }else {
+exports.findUser = async (email, name) => {
+  try {
+    const users = await User.find({$or : [{ email: email }, {name: new RegExp('^'+name+'$', "i")}]});
+    // console.log(users);
+    if(users){
         return {
-            status: "fail",
-            message: "No users found with that email",
-          };
-      }
-    } catch (err) {
-      console.log(err);
+          status: "success",
+          message: "",
+          users,
+      };
+    }else {
+      return {
+          status: "fail",
+          message: "No users found with that email",
+        };
     }
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 exports.replaceDeleted = async (id, req) => {

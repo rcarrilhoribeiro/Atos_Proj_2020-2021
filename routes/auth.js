@@ -1,13 +1,12 @@
 const express = require('express');
 
 const authController = require('../controllers/authenticationController');
-const checkPassword = require('../middleware/checkPassword')
 
 const router = express.Router();
 
-router.get('/', authController.getLogin);
+router.get('/', authController.getLoginPage);
 
-router.post('/', checkPassword.checkLogin, authController.checkPass);
+router.post('/', authController.checkLogin, authController.checkPassChange);
 
 router.post('/logout', authController.logout)
 

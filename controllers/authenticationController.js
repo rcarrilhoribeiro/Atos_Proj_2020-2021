@@ -2,16 +2,15 @@ const User = require('../models/userModel')
 const jwt = require("jsonwebtoken");
 const userUtil = require('../utils/userUtil')
 
-exports.getLogin = (req, res) => {
+exports.getLoginPage = (req, res) => {
   if(!req.user){
     res.render('auth/login', {
       pageTitle: 'Login'
     })
-  }else res.redirect('/home')
-    
+  }else res.redirect('/home') 
 }
 
-exports.postLogin = async (req,res) => {
+exports.checkUserLogin = async (req,res) => {
     try {
         const { email, password } = req.body;
         console.log("bod", req.body);
@@ -49,11 +48,27 @@ exports.logout = (req, res) =>{
   }
 }
 
+exports.checkLogin = (req, res, next) => {
+  this.checkUserLogin(req, res)
+  .then(result => {
+    console.log("result checkLogin", result);
+    if(result.status === 'success'){
+      req.user = result.user
+      next()
+    }else{
+      res.redirect('/')
+    }
+  })
+  .catch(err => {
+      console.log(err);
+  })
+}
 
-exports.checkPass = (req, res, next) => {
+
+exports.checkPassChange = (req, res, next) => {
   userUtil.passwordCheck(req)
   .then(result => {
-    console.log(result);
+    // console.log(result);
       if(result.status === 'fail'){
           res.render('backoffice/change-password', {
               user: result.user,
