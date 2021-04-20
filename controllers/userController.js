@@ -1,11 +1,12 @@
 const User = require('../models/userModel')
-const dateConv = require('../utils/dateUtil').dateConversion
-const {findUser, deleteUser, replaceDeleted} = require('../utils/userUtil')
+const userUtil = require('../utils/userUtil')
+const bcrypt = require("bcrypt");
 
 exports.getHomePage = (req, res) => {
     res.render('backoffice/index', {
         pageTitle: 'Home',
-        path: '/home'
+        path: '/home',
+        user: req.user
     })
 }
 
@@ -21,7 +22,7 @@ exports.getUsersPage = (req, res) => {
 exports.postUsers = (req, res) => {
     const {email} = req.body
 
-    findUser(email)
+    userUtil.findUser(email)
     .then(result => {
         console.log(result);
         if(result.status === "success"){
@@ -72,7 +73,7 @@ exports.createUser = (req, res) => {
             users: [],
             success: {
                 status: true,
-                message: "Success to create user"
+                message: "successfully created user"
             }
         })
     })
@@ -103,7 +104,8 @@ exports.editUser = (req, res) => {
             res.render('backoffice/change-password', {
                 user: user,
                 pageTitle: "Change Password",
-                path: '/users'
+                path: '/users',
+                selfChange: undefined
             })
         })
         .catch(err => {
@@ -111,10 +113,10 @@ exports.editUser = (req, res) => {
         })
         
     }else if(_method === 'DELETE'){
-        replaceDeleted(userId, req)
+        userUtil.replaceDeleted(userId, req)
         .then(result => {
             if(result.status === 'success'){
-                deleteUser(userId)
+                userUtil.deleteUser(userId)
                 .then(result => {
                     if(result.status === 'success'){
                         res.render("backoffice/users", {
@@ -143,6 +145,37 @@ exports.editUser = (req, res) => {
             }
         })
     }
+}
+
+exports.changePassword = async (req, res) => {
+    const userId = req.params.userId;
+    const password = await bcrypt.hash(req.body.password1, 12)
+    userUtil.passwordReset(userId, password, false)
+    .then(result => {
+        console.log(result);
+        if(result.status === 'success'){
+            res.render("backoffice/users", {
+                pageTitle: 'Users',
+                path: '/users',
+                users: [],
+                success: {
+                    status: true,
+                    message: "successfully altered the password"
+                }
+            })
+        }else {
+            res.render("backoffice/users", {
+                pageTitle: 'Users',
+                path: '/users',
+                users: [],
+                success: {
+                    status: false,
+                    message: "Failure to alter password",
+                    error: 'Who knows'
+                }
+            })
+        }
+    })
 }
 
 

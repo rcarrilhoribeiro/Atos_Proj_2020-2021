@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 exports.deleteUser = async (id) => {
     try {
-      let res = await User.findByIdAndDelete(id);
+      await User.findByIdAndDelete(id);
       return {
         status: "success",
         message: "User successfully deleted",
@@ -19,7 +19,6 @@ exports.deleteUser = async (id) => {
 
 exports.findUser = async (email) => {
     try {
-    //   const name = req.body.name;
       const user = await User.findOne({ email: email });
       console.log(user);
       if(user){
@@ -42,9 +41,7 @@ exports.findUser = async (email) => {
 exports.replaceDeleted = async (id, req) => {
   try {
     const user = await User.findOne({_id: id});
-    let token = req.headers["cookie"].substring(4);
-    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-    const deleting_user = await User.findById(decoded.id);
+    const deleting_user = req.user
 
     await Project.updateMany({authorEmail: user.email}, {
       author: deleting_user.name,
@@ -60,18 +57,18 @@ exports.replaceDeleted = async (id, req) => {
   }
 };
 
-
-exports.passwordReset = async (id, req) => {
+exports.passwordReset = async (id, password, selfChange) => {
   try {
     await User.findByIdAndUpdate(id, {
-      password: req.body.password1,
-      changedPassword: false,
+      password: password,
+      changedPassword: selfChange,
     });
     return {
       status: "success",
       message: "Password Edited",
     };
   } catch (err) {
+    console.log(err);
     return {
       status: "fail",
       message: "Could not change user password",
@@ -79,16 +76,32 @@ exports.passwordReset = async (id, req) => {
   }
 };
 
-exports.passwordCheck = async (req, res, next) => {
+exports.passwordCheck = async (req) => {
   try {
-    let token = req.headers["cookie"].substring(4);
-    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-    const freshUser = await User.findById(decoded.id);
-    next();
+    // let token = req.headers["cookie"].split(' ').filter(c => {
+    //   return c.includes('jwt=')
+    // })[0].substring(4);
+    // const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    // const user = await User.findById(decoded.id);
+    console.log("passwordCheck", req.user);
+    const verify = req.user.changedPassword
+    if (!verify) {
+      return {
+        status: "fail",
+        message: "You must change your password",
+        user: req.user,
+      };
+    }else {
+      return {
+        status: "approved",
+        message: "",
+        user: req.user,
+      };
+    }
   } catch (err) {
-    return JSON.parse({
-      status: "fail",
-      message: "You must change your password",
-    });
+    return {
+      status: "error",
+      message: "Error verifying password",
+    };
   }
 };

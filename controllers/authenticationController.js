@@ -1,21 +1,25 @@
 const User = require('../models/userModel')
 const jwt = require("jsonwebtoken");
+const userUtil = require('../utils/userUtil')
 
 exports.getLogin = (req, res) => {
+  if(!req.user){
     res.render('auth/login', {
-        pageTitle: 'Login'
+      pageTitle: 'Login'
     })
+  }else res.redirect('/home')
+    
 }
 
-postLogin = async (req,res) => {
+exports.postLogin = async (req,res) => {
     try {
         const { email, password } = req.body;
-        console.log(req.body);
+        console.log("bod", req.body);
         const user = await User.findOne({
           email: email,
         }).select("+password");
 
-        console.log(user);
+        console.log("user encontrado", user);
     
         if (!user || !(await user.correctPassword(password, user.password))) {
           return {
@@ -23,9 +27,7 @@ postLogin = async (req,res) => {
             message: 'No user found'
           }
         }
-    
-        createCookie(user, res);
-        
+        createCookie(user, res)
         return {
           status: "success",
           user,
@@ -38,31 +40,42 @@ postLogin = async (req,res) => {
       }
 }
 
-exports.renderHomePage = (req, res) => {
-    const result = postLogin(req, res)
-    .then(result => {
-      if(result.status === 'success'){
-        res.render('backoffice/index', {
-            pageTitle: 'Home',
-            path: '/home',
-            user: result.user
-        })
+exports.logout = (req, res) =>{
+  try{
+    res.clearCookie('jwt')
+    res.redirect('/')
+  }catch(err){
+    console.log("erro logout", err);
+  }
+}
+
+
+exports.checkPass = (req, res, next) => {
+  userUtil.passwordCheck(req)
+  .then(result => {
+    console.log(result);
+      if(result.status === 'fail'){
+          res.render('backoffice/change-password', {
+              user: result.user,
+              pageTitle: "Change Password",
+              path: '/users',
+              selfChange: true
+          })
+      }else if(result.status === 'approved'){
+          res.redirect('/home')
       }else{
         res.redirect('/')
       }
-    })
-    .catch(err => {
-        console.log(err);
-    })
+  })
 }
 
 const signToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES,
     });
-  };
+};
   
-  const createCookie = (user, res) => {
+const createCookie = (user, res) => {
     const token = signToken(user._id);
     const cookieOptions = {
       expires: new Date(
@@ -71,4 +84,4 @@ const signToken = (id) => {
       httpOnly: true,
     };
     res.cookie("jwt", token, cookieOptions);
-  };
+};
