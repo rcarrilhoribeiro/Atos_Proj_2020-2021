@@ -1,24 +1,58 @@
 <%- include('../includes/head.ejs') %>
-    
-</head>
 
-<body>
-    <%- include('../includes/navigation.ejs') %>
-    <main>
+  </head>
+
+  <body>
+    <%- include('../includes/navigation.ejs', {role: role}) %>
+      <main>
         <h3>Search Projects</h3>
         <div class="box-form">
-            <form action="/projects", method="POST">
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <label for="inputEmail4">Email</label>
-                    <input type="email" class="form-control" id="inputEmail4" placeholder="Name">
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="inputPassword4">Password</label>
-                    <input type="password" class="form-control" id="inputPassword4" placeholder="Email">
-                  </div>
-                </div>
-                <div class="form-group">
+          <form action="/projects" , method="POST">
+            <div class="form-row">
+              <div class="form-group col-md-4">
+                <label for="inputEmail">Author's Email</label>
+                <input type="email" name="author" class="form-control" id="inputEmail" placeholder="Email">
+              </div>
+              <div class="form-group col-md-4">
+                <label for="inputName">Project's Name</label>
+                <input type="text" name="name" class="form-control" id="inputName" placeholder="Name">
+              </div>
+              <div class="form-group col-md-4">
+                <label for="inputName">Client</label>
+                <input type="text" name="client" class="form-control" id="inputName" placeholder="Client">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-3">
+                <label for="inputSector">Sector</label>
+                <select name="sector" id="inputSector" class="form-control">
+                  <option selected></option>
+                  <option>Research & Development</option>
+                  <option>Production</option>
+                  <option>Investment</option>
+                </select>
+              </div>
+              <div class="form-group col-md-3">
+                <label for="inputTech">Technologies</label>
+                <select name="tech" id="inputTech" class="form-control">
+                  <option selected></option>
+                  <option>Nodejs</option>
+                  <option>NET Core</option>
+                  <option>PHP</option>
+                </select>
+              </div>
+              <div class="form-group col-md-3">
+                <label for="date-input">From</label>
+                <input name="from" class="form-control" type="date" value="YYYY-MM-DD" id="date-input">
+              </div>
+              <div class="form-group col-md-3">
+                <label for="date-input">To</label>
+                <input name="to" class="form-control" type="date" value="YYYY-MM-DD" id="date-input">
+              </div>
+              
+            </div>
+
+            <!-- <div class="form-group">
                   <label for="inputAddress">Address</label>
                   <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
                 </div>
@@ -50,9 +84,89 @@
                       Check me out
                     </label>
                   </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Search</button>
-              </form>
+                </div> -->
+            <button type="submit" class="btn btn-primary">Search</button>
+            <% if(role !== 'basic'){ %>
+              <a href="/projects/project" class="btn btn-secondary">Create Project</a>
+            <% } %> 
+            
+          </form>
         </div>
-    </main>
-</body>
+        <div class="showResults">
+          <% if(projects) { %>
+            <div class="results">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="card">
+                      <div class="card-body">
+                        <h5 class="card-title text-uppercase mb-0">Manage Projects</h5>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table no-wrap user-table mb-0">
+                          <thead>
+                            <tr>
+                              <th scope="col" class="border-0 text-uppercase font-medium pl-4">Client</th>
+                              <th scope="col" class="border-0 text-uppercase font-medium">Project Name</th>
+                              <th scope="col" class="border-0 text-uppercase font-medium">Author</th>
+                              <th scope="col" class="border-0 text-uppercase font-medium">Sector</th>
+                              <th scope="col" class="border-0 text-uppercase font-medium">Added</th>
+                              <th scope="col" class="border-0 text-uppercase font-medium">Info</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% for (let p of projects) {%>
+                              <tr>
+                                <td class="pl-4">
+                                  <!-- <% %> --> Client's name
+                                </td>
+                                <td>
+                                  <h5 class="font-medium mb-0">
+                                    <%=p.name%>
+                                  </h5>
+                                </td>
+                                <td>
+                                  <span class="text-muted">
+                                    <%=p.author%>
+                                  </span><br>
+                                </td>
+                                <td>
+                                  <!-- <select class="form-control category-select" id="exampleFormControlSelect1">
+                                            <option>Admin</option>
+                                            <option>Internal</option>
+                                            <option>Basic</option>
+                                          </select> -->
+                                  <span class="text-muted">
+                                    <!-- <%=p.role%> --> Sector
+                                  </span>
+                                </td>
+                                <td>
+                                  <span class="text-muted">
+                                    <%=p.createdAt.toString().substring(4, 15) %>
+                                  </span>
+                                </td>
+                                <td>
+                                  <form method="GET" action="/projects/project/<%=p._id%>">
+                                    <!-- <input type="hidden" name="_method" value="PATCH" /> -->
+                                    <button type="submit" title="EDIT"
+                                      class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
+                                      <i class="fas fa-info"></i>
+                                    </button>
+                                  </form>
+                                </td>
+                              </tr>
+                              <% } %>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% } %>
+      </main>
+  </body>
+
+  </html>
+

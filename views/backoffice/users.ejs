@@ -2,7 +2,7 @@
   </head>
 
   <body>
-    <%- include('../includes/navigation.ejs') %>
+    <%- include('../includes/navigation.ejs', {role: role}) %>
       <main>
         <% if(success) {%>
           <% if(success.status === true) { %>
@@ -31,7 +31,8 @@
             <button type="submit" class="btn btn-primary">Search</button>
             <a href="/users/user" class="btn btn-secondary">Create User</a>
           </form>
-          <div class="showResults">
+        </div>
+        <div class="showResults">
             <% if(users) { let c=0%>
               <div class="results">
                 <div class="container">
@@ -111,13 +112,10 @@
                 </div>
               </div>
               <% } %>
-          </div>
-
-
       </main>
   </body>
 
-  </html>
+</html>
 
 <script>
   function confirmDelete() {

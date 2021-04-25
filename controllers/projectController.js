@@ -1,54 +1,59 @@
-const Project = require("./../models/projectModel");
-const User = require("./../models/userModel");
+const Project = require('../models/projectModel');
+const projectUtil = require('../utils/projectUtil')
 
 exports.getProjectsPage = (req, res) => {
-  res.render("backoffice/projects", {
-    pageTitle: "Projects",
-    path: "/projects",
-  });
-};
+    res.render('backoffice/projects', {
+        pageTitle: 'Projects',
+        path: '/projects',
+        projects: [],
+        role: req.user.role
+    })
+}
 
-exports.postProjects = (req, res) => {
-  res.redirect("/home");
-};
+exports.getProjectsList = (req, res) => {
+    console.log(req.body);
+    Project.find()
+    .then(projects => {
+        res.render('backoffice/projects', {
+            pageTitle: 'Projects',
+            path: '/projects',
+            projects: projects,
+            role: req.user.role
+        })
+    })
+}
 
-exports.createProject = async (req, res) => {
-  try {
-    await Project.create(req.body);
-  } catch (err) {
-    return {
-      status: "error",
-      message: "Failed loading project",
-    };
-  }
-};
+exports.getSpecificProjectPage = (req, res) => {
+    const {projectId} = req.params;
+    Project.findById(projectId)
+    .then(project => {
+        res.render('backoffice/project-details', {
+            pageTitle: 'Project',
+            path: '/projects',
+            project,
+            role: req.user.role,
+            success: undefined
+        })
+    })
+}
 
-exports.updateProject = async (req, res) => {
-  try {
-  } catch {}
-};
-
-exports.editProjectCreator = async (req, res) => {
-  const authorEmail = req.body.email;
-  const projectID = req.body.id;
-  const username = await User.findOne({ email: authorEmail }, function (err) {
-    return { status: "error", message: "Failed finding user" };
-  });
-
-  await Project.findByIdAndUpdate(
-    projectID,
-    {
-      author: username.name,
-      authorEmail: authorEmail,
-    },
-    function (err) {
-      if (err) {
-        return { status: "error", message: "Failed updating project" };
-      }
+exports.changeAuthorOfProject = (req, res) => {
+  const {projectId} = req.params;
+  projectUtil.editProjectCreator(req)
+  .then(result => {
+    if(result.status === 'success'){
+      res.redirect('/projects/project/' + projectId)
+    }else{
+      Project.findById(projectId)
+      .then(project => {
+        res.render('backoffice/project-details', {
+            pageTitle: 'Project',
+            path: '/projects',
+            project,
+            role: req.user.role,
+            success: result
+        })
+      })
     }
-  );
-  //tirar aquando da implementacao
-  res.status(200).json({
-    status: "success",
-  });
-};
+  })
+}

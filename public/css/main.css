@@ -219,3 +219,11 @@ button:not(:disabled) {
 .changePassDiv{
   padding: 1em 20em 0 20em;
 }
+
+.project-details{
+  padding: 4% 1% 0% 1%;
+}
+
+.project-info-box{
+  padding-bottom: 5%;
+}

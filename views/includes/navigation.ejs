@@ -5,9 +5,11 @@
             <li class="main-header__item">
                 <a class="<%= path === '/home' ? 'active' : '' %>" href="/home">Home</a>
             </li>
-            <li class="main-header__item">
-                <a class="<%= path === '/users' ? 'active' : '' %>" href="/users">Users</a>
-            </li>
+            <% if(role === 'admin') { %>
+                <li class="main-header__item">
+                    <a class="<%= path === '/users' ? 'active' : '' %>" href="/users">Users</a>
+                </li>
+            <% } %>
             <li class="main-header__item">
                 <a class="<%= path === '/projects' ? 'active' : '' %>" href="/projects">Projects</a>
             </li>
