@@ -8,6 +8,7 @@ const router = express.Router();
 //Projects
 router.post('/projects/project/:projectId/author', permissions.restrict(['admin']), projectController.changeAuthorOfProject)
 
+// router.post('/projects/project/:projectId', projectController.getSpecificProjectPage)
 router.get('/projects/project/:projectId', projectController.getSpecificProjectPage)
 
 router.get('/projects', projectController.getProjectsPage)

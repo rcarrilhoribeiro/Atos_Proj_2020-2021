@@ -1,0 +1,137 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/popup.css">
+    </head>
+
+    <body>
+        <%- include('../includes/navigation.ejs', {role: role}) %>
+        <main>
+            <% if(success) {%>
+                <% if(success.status === true) { %>
+                  <div class="alert alert-success">
+                    <strong><%= success.message %></strong>
+                  </div>
+                <% } else if(success.status === false) { %> 
+                  <div class="alert alert-danger">
+                    <strong><%= success.message %>. Reason: <%=success.error %></strong>
+                  </div>
+                <% } %>
+            <% } %>
+            <h3>Search Entities</h3>
+            <div class="box-form">
+                <form action="/entities" , method="POST">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="FormControlSelect">Type of Entities</label>
+                            <select name="entity" class="form-control category-select" id="FormControlSelect">
+                                <option selected></option>
+                                <% for(let ent of typeOfEntities) { %>
+                                    <option id="<%=ent%>"><%=ent%></option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputName">Name</label>
+                            <input type="text" name="name" class="form-control" id="inputName" placeholder="Entity's name">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    
+                </form>
+                <button id="createEnt" class="btn btn-secondary"><i class="far fa-edit"></i>Create Entity</button>
+            </div>
+            <% if(entities) {%>
+                <div class="results">
+                  <div class="container">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="card">
+                          <div class="card-body">
+                            <h5 class="card-title text-uppercase mb-0">Manage Entities</h5>
+                          </div>
+                          <div class="table-responsive">
+                            <table class="table no-wrap user-table mb-0">
+                              <thead>
+                                <tr>
+                                  <th scope="col" class="border-0 text-uppercase font-medium">Name</th>
+                                  <th scope="col" class="border-0 text-uppercase font-medium">Designation</th>
+                                  <th scope="col" class="border-0 text-uppercase font-medium">Added</th>
+                                  <th scope="col" class="border-0 text-uppercase font-medium">Manage</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <% for (let ent of entities) { %>
+                                    <tr>
+                                        <td>
+                                          <h5 id="<%=ent.name%>" class="font-medium mb-0" contenteditable="true">
+                                            <%=ent.name%>
+                                          </h5>
+                                        </td>
+                                        <td>
+                                          <span class="text-muted">
+                                            <%=ent.designation%>
+                                          </span><br>
+                                        </td>
+                                        <td>
+                                          <span class="text-muted">
+                                            <%=user.createdAt.toString().substring(4, 15) %>
+                                          </span>
+                                        </td>
+                                        <td>
+                                            <form id="editEntityForm" method="POST" action="/entities/entity/<%=ent._id%>">
+                                                <input type="hidden" name="_method" value="PATCH" />
+                                                <input id="idNewName" type="hidden" name="newName" value="" />
+                                                <button onclick="getElementById('idNewName').value = getElementById('<%=ent.name%>').value" type="submit" title="SAVE" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </form>
+                                            <form onsubmit="return confirm('Do you really want to delete this user?');" method="POST" action="/entities/entity/<%=ent._id%>">
+                                                <input type="hidden" name="_method" value="DELETE" />
+                                                <button type="submit" title="DELETE"class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                <% } %>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <% } %>
+        </main>
+
+
+        <section id="myPopup" class="modal mb-5 text-center">  
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h4>New Entity</h4>
+                <form method="POST" action="/entities/entity">
+                    <div class="createEntDiv">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="FormControlSelect">Type of Entities</label>
+                                <select name="entityPopup" class="form-control category-select" id="popupSelected">
+                                    <option selected></option>
+                                    <% for(let ent of typeOfEntities) { %>
+                                        <option id="<%=ent%>"><%=ent%></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputName">Name</label>
+                                <input type="text" name="namePopup" class="form-control" id="popupName" onchange='checkSelected();' placeholder="Entity's name">
+                            </div>
+                        </div>
+                    </div>
+                    <button id="submit" type="submit" class="btn btn-primary mb-4" disabled>Create Entity</button>
+                </form>
+                
+            </div>
+        </section>
+    </body>
+
+    <script src="/js/entities.js"></script>
+</html>

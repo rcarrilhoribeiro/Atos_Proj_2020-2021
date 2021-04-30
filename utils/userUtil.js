@@ -17,6 +17,7 @@ exports.deleteUser = async (id) => {
   }
 };
 
+// TODO -> Pesquisa por email
 exports.findUser = async (email, name) => {
   try {
     //{name: new RegExp('^'+name+'$', "i")}

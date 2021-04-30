@@ -112,7 +112,7 @@ exports.editUser = (req, res) => {
                 user: user,
                 pageTitle: "Change Password",
                 path: '/users',
-                selfChange: undefined,
+                selfChange: false,
                 role: req.user.role
             })
         })
@@ -165,6 +165,7 @@ exports.changePassword = async (req, res) => {
         // console.log(result);
         if(result.status === 'success'){
             if (req.body.changingPassword === "true") {
+
                 res.redirect("/home");
             } else {
                 res.render("backoffice/users", {
@@ -180,15 +181,15 @@ exports.changePassword = async (req, res) => {
               }
         } else {
             res.render("backoffice/users", {
-            pageTitle: "Users",
-            path: "/users",
-            users: [],
-            success: {
-                status: false,
-                message: "Failure to alter password",
-                error: "Who knows",
-            },
-            role: req.user.role
+                pageTitle: "Users",
+                path: "/users",
+                users: [],
+                success: {
+                    status: false,
+                    message: "Failure to alter password",
+                    error: "Who knows",
+                },
+                role: req.user.role
             });
         }
           });
