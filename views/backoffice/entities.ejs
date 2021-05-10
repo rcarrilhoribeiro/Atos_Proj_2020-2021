@@ -31,7 +31,7 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="inputName">Name</label>
-                            <input type="text" name="name" class="form-control" id="inputName" placeholder="Entity's name">
+                            <input onkeyup="showState(this.value);" autocomplete="off" type="text" name="name" class="form-control" id="inputName" placeholder="Entity's name">
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Search</button>
@@ -62,9 +62,8 @@
                                 <% for (let ent of entities) { %>
                                     <tr>
                                         <td>
-                                          <h5 id="<%=ent.name%>" class="font-medium mb-0" contenteditable="true">
-                                            <%=ent.name%>
-                                          </h5>
+                                        <form id="editEntityForm" method="POST" action="/entities/entity">
+                                          <input type="text" name="newName" class="font-medium mb-0" value="<%=ent.name%>"></input>
                                         </td>
                                         <td>
                                           <span class="text-muted">
@@ -73,18 +72,18 @@
                                         </td>
                                         <td>
                                           <span class="text-muted">
-                                            <%=user.createdAt.toString().substring(4, 15) %>
+                                            <%=ent.createdAt.toString().substring(4, 15) %>
                                           </span>
                                         </td>
-                                        <td>
-                                            <form id="editEntityForm" method="POST" action="/entities/entity/<%=ent._id%>">
+                                        <td>                                            
+                                                <input type="hidden" name="entityId" value="<%=ent._id%>">
                                                 <input type="hidden" name="_method" value="PATCH" />
-                                                <input id="idNewName" type="hidden" name="newName" value="" />
-                                                <button onclick="getElementById('idNewName').value = getElementById('<%=ent.name%>').value" type="submit" title="SAVE" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
+                                                <button type="submit" title="SAVE" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
                                             </form>
-                                            <form onsubmit="return confirm('Do you really want to delete this user?');" method="POST" action="/entities/entity/<%=ent._id%>">
+                                            <form onsubmit="return confirm('Do you really want to delete this entity?');" method="POST" action="/entities/entity">
+                                                <input type="hidden" name="entityId" value="<%=ent._id%>">
                                                 <input type="hidden" name="_method" value="DELETE" />
                                                 <button type="submit" title="DELETE"class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
                                                     <i class="fas fa-trash"></i>
@@ -108,7 +107,7 @@
             <div class="modal-content">
                 <span class="close">&times;</span>
                 <h4>New Entity</h4>
-                <form method="POST" action="/entities/entity">
+                <form method="POST" action="/entities/new-entity">
                     <div class="createEntDiv">
                         <div class="form-row">
                             <div class="form-group col-md-6">

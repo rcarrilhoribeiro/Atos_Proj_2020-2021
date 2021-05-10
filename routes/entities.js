@@ -6,12 +6,9 @@ const permissions = require('../middleware/permissions');
 const router = express.Router();
 
 //Entities
-router.post('/entities/entity/:entityId', (req, res) => {
-    console.log(req.body);
-    res.redirect('/')
-})
+router.post('/entities/entity', entitiesController.editEntity)
 
-router.post('/entities/entity', entitiesController.createEntity)
+router.post('/entities/new-entity', entitiesController.createEntity)
 
 router.get('/entities', entitiesController.getEntitiesPages)
 

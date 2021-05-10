@@ -2,7 +2,7 @@
   </head>
 
   <body>
-    <%- include('../includes/navigation.ejs', {role: role}) %>
+    <%- include('../includes/navigation.ejs', {role: mainUser.role}) %>
       <main>
         <% if(success) {%>
           <% if(success.status === true) { %>
@@ -29,7 +29,7 @@
               </div>
             </div>
             <button type="submit" class="btn btn-primary">Search</button>
-            <a href="/users/user" class="btn btn-secondary">Create User</a>
+            <a href="/users/new-user" class="btn btn-secondary">Create User</a>
           </form>
         </div>
         <div class="showResults">
@@ -86,20 +86,25 @@
                                     </span>
                                   </td>
                                   <td>
-                                    <form method="POST" action="/users/user/<%=user._id%>">
-                                      <input type="hidden" name="_method" value="PATCH" />
-                                      <button type="submit" title="EDIT"
-                                        class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
-                                        <i class="fas fa-edit"></i>
-                                      </button>
-                                    </form>
-                                    <form onsubmit="return confirm('Do you really want to delete this user?');" method="POST" action="/users/user/<%=user._id%>">
-                                      <input type="hidden" name="_method" value="DELETE" />
-                                      <button type="submit" title="DELETE"
-                                        class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
-                                        <i class="fas fa-trash"></i>
-                                      </button>
-                                    </form>
+                                    
+                                    <% if(mainUser._id.toString() !== user._id.toString()){ %>
+                                      <form method="POST" action="/users/user">
+                                          <input type="hidden" name="_method" value="PATCH" />
+                                          <input type="hidden" name="userId" value="<%=user._id%>">
+                                          <button type="submit" title="EDIT"
+                                          class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
+                                          <i class="fas fa-edit"></i>
+                                        </button>
+                                      </form>
+                                      <form onsubmit="return confirm('Do you really want to delete this user?');" method="POST" action="/users/user">
+                                        <input type="hidden" name="_method" value="DELETE" />
+                                        <input type="hidden" name="userId" value="<%=user._id%>">
+                                        <button type="submit" title="DELETE"
+                                          class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
+                                          <i class="fas fa-trash"></i>
+                                        </button>
+                                      </form>
+                                    <% }%>
                                   </td>
                                 </tr>
                                 <% } %>
@@ -116,9 +121,3 @@
   </body>
 
 </html>
-
-<script>
-  function confirmDelete() {
-    confirm("Are you sure you want to delete this user?");
-  }
-</script>

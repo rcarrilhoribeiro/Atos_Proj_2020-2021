@@ -6,8 +6,7 @@ exports.getHomePage = (req, res) => {
     res.render('backoffice/index', {
         pageTitle: 'Home',
         path: '/home',
-        user: req.user,
-        role: req.user.role
+        mainUser: req.user
     })
 }
 
@@ -17,7 +16,7 @@ exports.getUsersPage = (req, res) => {
         path: '/users',
         users: [],
         success: undefined,
-        role: req.user.role
+        mainUser: req.user
     })
 }
 
@@ -28,28 +27,27 @@ exports.postUsers = (req, res) => {
     .then(result => {
         // console.log(result);
         if(result.status === "success"){
-            // let date = new Date(result.user.createdAt)
-            // result.user.createdAt = dateConv(date)
             res.render('backoffice/users', {
                 pageTitle: 'Users',
                 path: '/users',
                 users: result.users,
                 success: undefined,
-                role: req.user.role
-            })
-        }else{
-            res.render('backoffice/users', {
-                pageTitle: 'Users',
-                path: '/users',
-                users: [],
-                success: {
-                    status: false,
-                    message: "No users found",
-                    error: "Wrong email"
-                },
-                role: req.user.role
+                mainUser: req.user
             })
         }
+        // }else{
+        //     res.render('backoffice/users', {
+        //         pageTitle: 'Users',
+        //         path: '/users',
+        //         users: [],
+        //         success: {
+        //             status: false,
+        //             message: "No users found",
+        //             error: "Wrong email"
+        //         },
+        //         mainUser: req.user
+        //     })
+        // }
     })
     .catch(err => console.log(err))
 }
@@ -58,7 +56,7 @@ exports.getCreateUserPage = (req, res) => {
     res.render('admin/create-user', {
         pageTitle: 'Create User',
         path: '/users',
-        role: req.user.role
+        mainUser: req.user
     })
 }
 
@@ -78,9 +76,9 @@ exports.createUser = (req, res) => {
             users: [],
             success: {
                 status: true,
-                message: "successfully created user"
+                message: "Successfully created user"
             },
-            role: req.user.role
+            mainUser: req.user
         })
     })
     .catch(err => {
@@ -93,7 +91,7 @@ exports.createUser = (req, res) => {
                 message: "Failure to create user",
                 error: err
             },
-            role: req.user.role
+            mainUser: req.user
         })
         console.log(err);
     })
@@ -102,70 +100,72 @@ exports.createUser = (req, res) => {
 exports.editUser = (req, res) => {
     console.log(req.params);
     console.log(req.body);
-    const {userId} = req.params
-    const {_method} = req.body
-    
-    if(_method === 'PATCH'){
-        User.findById(userId)
-        .then(user => {
-            res.render('backoffice/change-password', {
-                user: user,
-                pageTitle: "Change Password",
-                path: '/users',
-                selfChange: false,
-                role: req.user.role
-            })
-        })
-        .catch(err => {
-            console.log(err);
-        })
-        
-    }else if(_method === 'DELETE'){
-        userUtil.replaceDeleted(userId, req)
-        .then(result => {
-            if(result.status === 'success'){
-                userUtil.deleteUser(userId)
-                .then(result => {
-                    if(result.status === 'success'){
-                        res.render("backoffice/users", {
-                            pageTitle: 'Users',
-                            path: '/users',
-                            users: [],
-                            success: {
-                                status: true,
-                                message: "successfully deleted user"
-                            },
-                            role: req.user.role
-                        })
-                    }
-                })
-                
-            }else{
-                res.render("backoffice/users", {
-                    pageTitle: 'Users',
+    const {_method, userId} = req.body
+    if(userId){
+        if(_method === 'PATCH'){
+            User.findById(userId)
+            .then(user => {
+                res.render('backoffice/change-password', {
+                    user: user,
+                    pageTitle: "Change Password",
                     path: '/users',
-                    users: [],
-                    success: {
-                        status: false,
-                        message: "Failure to delete user",
-                        error: err
-                    },
-                    role: req.user.role
+                    selfChange: false,
+                    mainUser: req.user
                 })
-            }
-        })
+            })
+            .catch(err => {
+                console.log(err);
+            })
+            
+        }else if(_method === 'DELETE'){
+            userUtil.replaceDeleted(userId, req)
+            .then(result => {
+                if(result.status === 'success'){
+                    userUtil.deleteUser(userId)
+                    .then(result => {
+                        if(result.status === 'success'){
+                            res.render("backoffice/users", {
+                                pageTitle: 'Users',
+                                path: '/users',
+                                users: [],
+                                success: {
+                                    status: true,
+                                    message: "Successfully deleted user"
+                                },
+                                mainUser: req.user
+                            })
+                        }
+                    })
+                    
+                }else{
+                    res.render("backoffice/users", {
+                        pageTitle: 'Users',
+                        path: '/users',
+                        users: [],
+                        success: {
+                            status: false,
+                            message: "Failure to delete user",
+                            error: err
+                        },
+                        mainUser: req.user
+                    })
+                }
+            })
+        }
+    }else{
+        res.redirect('/users')
     }
+    
 }
 
 exports.changePassword = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = req.body.userId;
     const password = await bcrypt.hash(req.body.password1, 12)
     userUtil.passwordReset(userId, password, req.body.changingPassword)
     .then(result => {
         // console.log(result);
         if(result.status === 'success'){
             if (req.body.changingPassword === "true") {
-
                 res.redirect("/home");
             } else {
                 res.render("backoffice/users", {
@@ -174,9 +174,9 @@ exports.changePassword = async (req, res) => {
                   users: [],
                   success: {
                     status: true,
-                    message: "successfully altered the password",
+                    message: "Successfully altered the password",
                   },
-                  role: req.user.role
+                  mainUser: req.user
                 });
               }
         } else {
@@ -187,9 +187,9 @@ exports.changePassword = async (req, res) => {
                 success: {
                     status: false,
                     message: "Failure to alter password",
-                    error: "Who knows",
+                    error: "Unknown error",
                 },
-                role: req.user.role
+                mainUser: req.user
             });
         }
           });

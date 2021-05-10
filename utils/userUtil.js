@@ -20,14 +20,13 @@ exports.deleteUser = async (id) => {
 // TODO -> Pesquisa por email
 exports.findUser = async (email, name) => {
   try {
-    //{name: new RegExp('^'+name+'$', "i")}
-    const users = await User.find({
+    let users = await User.find({
       $or: [
         { email: email },
         { name: { $regex: new RegExp(name.replace(/\s+/g, "\\s+"), "gi") } },
       ],
     });
-
+    
     // console.log(users);
     if (users) {
       return {

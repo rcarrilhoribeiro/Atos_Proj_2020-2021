@@ -48,25 +48,53 @@ exports.createEntity = (req, res) => {
             typeOfEntities,
             entities: [],
             success: {
-                status: true,
-                message: "Successfully created entity"
+                status: result.status,
+                message: result.message,
+                err: result.err
             },
         })
     })
-    .catch(err => {
-        res.render('backoffice/entities', {
-            pageTitle: 'Entities',
-            path: '/entities',
-            user: req.user,
-            role: req.user.role,
-            typeOfEntities,
-            entities: [],
-            success: {
-                status: false,
-                message: "Failure creating entity",
-                error: err
-            },
+}
+
+exports.editEntity = (req, res) => {
+    const typeOfEntities = entiUtil.getEntities()
+    const {_method, entityId, newName} = req.body
+    console.log(req.body);
+    if(_method === 'PATCH'){
+        entiUtil.updateEntity(entityId, newName)
+        .then(result => {
+            res.render('backoffice/entities', {
+                pageTitle: 'Entities',
+                path: '/entities',
+                user: req.user,
+                role: req.user.role,
+                typeOfEntities,
+                entities: [],
+                success: {
+                    status: result.status,
+                    message: result.message,
+                    err: result.err
+                },
+            })
         })
-        console.log(err);
-    })
+        
+    }else{
+        entiUtil.deleteEntity(entityId)
+        .then(result => {
+            res.render('backoffice/entities', {
+                pageTitle: 'Entities',
+                path: '/entities',
+                user: req.user,
+                role: req.user.role,
+                typeOfEntities,
+                entities: [],
+                success: {
+                    status: result.status,
+                    message: result.message,
+                    err: result.err
+                },
+            })
+        })
+    }
+
 }

@@ -1,7 +1,6 @@
 const User = require('../models/userModel')
 const jwt = require("jsonwebtoken");
 const userUtil = require('../utils/userUtil')
-const permissions = require('../middleware/permissions')
 
 exports.getLoginPage = (req, res) => {
   if(!req.user){
@@ -75,7 +74,7 @@ exports.checkPassChange = (req, res, next) => {
               pageTitle: "Change Password",
               path: '/',
               selfChange: true,
-              role: req.user.role
+              mainUser: req.user
           })
       }else if(result.status === 'approved'){
           res.redirect('/home')

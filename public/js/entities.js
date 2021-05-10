@@ -32,17 +32,42 @@ function checkSelected(){
     }
 }
 
-function createHiddenValue(id){
-  console.log(id)
-  var newVal = document.getElementById(id).value
-  console.log(newVal)
-  var input = document.createElement("input");
-
-  input.setAttribute("type", "hidden");
-
-  input.setAttribute("name", "newName");
-
-  input.setAttribute("value", newVal);
-
-  document.getElementById("editEntityForm").appendChild(input);
+function jsonToDataList (responseText, dataList){
+  dataList.innerHTML = '';
+   // Parse the JSON
+   //alert(responseText);
+   var jsonOptions = JSON.parse(responseText);
+   console.log(jsonOptions)
+   // Loop over the JSON array.
+   jsonOptions.forEach(
+    function(item) {
+      // Create a new <option> element.
+      var option = document.createElement('option');
+      // Set the value using the item in the JSON array.
+      option.value = item.name;
+      console.log(item.name)
+      // Add the <option> element to the <datalist>.
+      dataList.appendChild(option);
+    }
+  );      
+}
+var xmlHttp;
+function showState(str){ 
+  xmlHttp= new XMLHttpRequest();
+  var url="/ajax/entities-names";
+  url += "?query=" +str;
+  xmlHttp.onreadystatechange = function() {
+    // alert("State: " + xmlHttp.readyState + " Status: " + xmlHttp.status);
+    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+      //document.getElementById("countries").innerHTML=xmlHttp.responseText; 
+        //alert(" Text: " + xmlHttp.responseText);
+      jsonToDataList(xmlHttp.responseText, document.getElementById("inputName"));
+      document.getElementById("inputName").placeholder = "insert keyword...";
+      document.getElementById("inputName").focus();
+    }
+    else
+      document.getElementById("inputName").placeholder = "Couldn't load datalist options :(";
+  }
+  xmlHttp.open("GET", url, true);
+  xmlHttp.send(null);
 }

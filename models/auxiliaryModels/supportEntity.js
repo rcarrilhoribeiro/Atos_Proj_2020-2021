@@ -6,7 +6,7 @@ const supportEntity = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    minlength: 4,
+    minlength: 3,
     maxlength: 20,
     unique: [true, 'Entity already exists']
   },

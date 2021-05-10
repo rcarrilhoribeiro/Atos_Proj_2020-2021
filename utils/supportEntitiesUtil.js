@@ -7,50 +7,72 @@ exports.getEntities = () => {
   return entities;
 };
 
+//TODO -> Pesquisa por email ou nome (melhorar esta parte)
 exports.getEntity = (supportEntityType, searchText) => {
   try{
-    return SupportEntity.find({designation : supportEntityType , name: {$regex: new RegExp(searchText.replace(/\s+/g, "\s+"), "gi") }},)
+    return SupportEntity.find({
+      $or: [
+        { designation: supportEntityType },
+        { name: { $regex: new RegExp(searchText.replace(/\s+/g, "\\s+"), "gi") } },
+      ]
+    })
   }
   catch(err){
     return {
       status: 'error',
-      message: 'Failed finding specified entities'
+      message: 'Failed finding specified entities',
+      err,
     }
   }
 };
 
-exports.deleteEntity = (id) => {
+exports.deleteEntity = async (id) => {
   try{
-    SupportEntity.findByIdAndDelete(id);
+    await SupportEntity.findByIdAndDelete(id);
+    return {
+      status: true,
+      message: 'Successfully deleted entity'
+    }
   }
   catch(err){
     return {
-      status: 'error',
-      message: 'Failed deleting entity'
+      status: false,
+      message: 'Failed deleting entity',
+      err,
     }
   }
 };
 
-exports.updateEntity = (id, changeText) => {
+exports.updateEntity = async (id, changeText) => {
   try{
-    SupportEntity.findByIdAndUpdate(id, {name: changeText});
+    await SupportEntity.findByIdAndUpdate(id, {name: changeText});
+    return {
+      status: true,
+      message: 'Successfully updated entity'
+    }
   }
   catch(err){
     return {
-      status: 'error',
-      message: 'Failed updating entity'
+      status: false,
+      message: 'Failed updating entity',
+      err,
     }
   }
 };
 
-exports.createEntity = (supportEntityType, name) => {
+exports.createEntity = async (supportEntityType, name) => {
   try{
-    SupportEntity.create({name, desgination: supportEntityType});
+    await SupportEntity.create({name, desgination: supportEntityType});
+    return {
+      status: true,
+      message: 'Successfully created entity'
+    }
   }
   catch(err){
     return {
-      status: 'error',
-      message: 'Failed creating entity'
+      status: false,
+      message: 'Failed creating entity',
+      err,
     }
   }
 };

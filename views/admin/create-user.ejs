@@ -3,11 +3,11 @@
     </head>
 
     <body>
-    <%- include('../includes/navigation.ejs', {role: role}) %>
+    <%- include('../includes/navigation.ejs', {role: mainUser.role}) %>
     <main>
         <h3>Create User</h3>
         <div class="box-form">
-            <form action="/users/user", method="POST">
+            <form action="/users/new-user", method="POST">
                 <div class="form-row">
                     <div class="form-group col-md-6">
                     <label for="inputEmail4">Email</label>
