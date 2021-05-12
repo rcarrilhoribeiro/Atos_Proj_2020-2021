@@ -7,7 +7,7 @@
       <main>
         <h3>Search Projects</h3>
         <div class="box-form">
-          <form action="/projects" , method="POST">
+          <form action="/projects" , method="GET">
             <div class="form-row">
               <div class="form-group col-md-4">
                 <label for="inputEmail">Author's Email</label>
@@ -87,7 +87,7 @@
                 </div> -->
             <button type="submit" class="btn btn-primary">Search</button>
             <% if(role !== 'basic'){ %>
-              <a href="/projects/project" class="btn btn-secondary">Create Project</a>
+              <a href="/project/new-project" class="btn btn-secondary">Create Project</a>
             <% } %> 
             
           </form>

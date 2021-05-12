@@ -20,28 +20,31 @@ exports.deleteUser = async (id) => {
 // TODO -> Pesquisa por email
 exports.findUser = async (email, name) => {
   try {
-    let users = await User.find({
-      $or: [
-        { email: email },
-        { name: { $regex: new RegExp(name.replace(/\s+/g, "\\s+"), "gi") } },
-      ],
-    });
-    
-    // console.log(users);
-    if (users) {
-      return {
-        status: "success",
-        message: "",
-        users,
-      };
+    let users = null;
+    if (name) {
+      users = await User.find({
+        $or: [
+          { email: email },
+          { name: { $regex: new RegExp(name.replace(/\s+/g, "\\s+"), "gi") } },
+        ],
+      });
+    } else if (email) {
+      users = await User.find({ email });
     } else {
-      return {
-        status: "fail",
-        message: "No users found with that email",
-      };
+      users = await User.find();
     }
+
+    return {
+      status: "success",
+      message: "",
+      users,
+    };
   } catch (err) {
     console.log(err);
+    return {
+      status: "fail",
+      message: "No users found with that email",
+    };
   }
 };
 
@@ -88,11 +91,6 @@ exports.passwordReset = async (id, password, selfChange) => {
 
 exports.passwordCheck = async (req) => {
   try {
-    // let token = req.headers["cookie"].split(' ').filter(c => {
-    //   return c.includes('jwt=')
-    // })[0].substring(4);
-    // const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-    // const user = await User.findById(decoded.id);
     console.log("passwordCheck", req.user);
     const verify = req.user.changedPassword;
     if (!verify) {
