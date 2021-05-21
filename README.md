@@ -11,4 +11,9 @@ Login Authentication;
 EJS Pages;
 CRUD ops with user;
 
+- Semana 3 e 4:
+Entidades Auxiliares (CRUD);
+Paginação
+
+
 
