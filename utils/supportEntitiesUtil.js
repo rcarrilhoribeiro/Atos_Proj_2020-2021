@@ -13,7 +13,6 @@ exports.getEntities = () => {
   return entities;
 };
 
-//TODO -> Pesquisa por email ou nome (melhorar esta parte)
 exports.getEntity = async (supportEntityType, searchText) => {
   try {
     if (searchText) {
@@ -26,11 +25,44 @@ exports.getEntity = async (supportEntityType, searchText) => {
             },
           },
         ],
-      });
+      })
     } else if (supportEntityType) {
-      return await SupportEntity.find({ designation: supportEntityType });
+      return await SupportEntity.find({ designation: supportEntityType })
     } else {
-      return await SupportEntity.find();
+      return await SupportEntity.find()
+    }
+  } catch (err) {
+    return {
+      status: "error",
+      message: "Failed finding specified entities",
+      err,
+    };
+  }
+};
+
+exports.getEntityPagination = async (supportEntityType, searchText, page, total) => {
+  try {
+    if (searchText) {
+      return await SupportEntity.find({
+        $or: [
+          { designation: supportEntityType },
+          {
+            name: {
+              $regex: new RegExp(searchText.replace(/\s+/g, "\\s+"), "gi"),
+            },
+          },
+        ],
+      })
+      .skip((page - 1) * total)
+      .limit(total);
+    } else if (supportEntityType) {
+      return await SupportEntity.find({ designation: supportEntityType })
+      .skip((page - 1) * total)
+      .limit(total);
+    } else {
+      return await SupportEntity.find()
+      .skip((page - 1) * total)
+      .limit(total);
     }
   } catch (err) {
     return {

@@ -1,44 +1,43 @@
 const User = require("../models/userModel");
+const Project = require("../models/projectModel");
 const userUtil = require("../utils/userUtil");
 const bcrypt = require("bcrypt");
 
-exports.getHomePage = (req, res) => {
+const ITEMS_PER_PAGE = 3;
+
+exports.getHomePage = async (req, res) => {
+  const projects = await Project.find({authorEmail: req.user.email});
   res.render("backoffice/index", {
     pageTitle: "Home",
     path: "/home",
     mainUser: req.user,
+    userProjects: projects
   });
 };
 
-exports.postUsers = (req, res) => {
-  const { email, name } = req.query;
-
+exports.searchUsers = (req, res) => {
+  const page = +req.query.page || 1; //+ to int
+  const email = req.query.email || '';
+  const name = req.query.name || ''
   userUtil
-    .findUser(email, name)
-    .then((result) => {
-      // console.log(result);
-      if (result.status === "success") {
-        res.render("backoffice/users", {
-          pageTitle: "Users",
-          path: "/users",
-          users: result.users,
-          success: undefined,
-          mainUser: req.user,
-        });
-      }
-      // }else{
-      //     res.render('backoffice/users', {
-      //         pageTitle: 'Users',
-      //         path: '/users',
-      //         users: [],
-      //         success: {
-      //             status: false,
-      //             message: "No users found",
-      //             error: "Wrong email"
-      //         },
-      //         mainUser: req.user
-      //     })
-      // }
+    .findUserPagination(email, name, page, ITEMS_PER_PAGE)
+    .then(async (result) => {
+      const totalSearch = await userUtil.findUser(email, name);
+      res.render("backoffice/users", {
+        pageTitle: "Users",
+        path: "/users",
+        users: result,
+        success: undefined,
+        mainUser: req.user,
+        email, //query email
+        name, //query name
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalSearch.length,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalSearch.length/ITEMS_PER_PAGE)
+      });
     })
     .catch((err) => console.log(err));
 };
@@ -53,46 +52,69 @@ exports.getCreateUserPage = (req, res) => {
 
 exports.createUser = async (req, res) => {
   const { email, name, password1, password2, role } = req.body;
-  const user = new User({
-    name: name,
-    email: email,
-    password: password1,
-    role: role,
-  });
-  user
-    .save()
-    .then(async (result) => {
-      const users = await User.find();
+  const page = +req.query.page || 1; //+ to int
+  const e = '';
+  const n = ''
+  const users = await userUtil.findUserPagination(e, n, page, ITEMS_PER_PAGE);
+  const totalSearch = await userUtil.findUser(e, n);
+  if(!(password1==password2)){
+    res.render("backoffice/users", {
+      pageTitle: "Users",
+      path: "/users",
+      users,
+      success: {
+        status: false,
+        message: "Failed creating user. Passwords are not equal",
+        error: ''
+      },
+      mainUser: req.user,
+      email: e, //query email
+      name: n, //query name
+      currentPage: page,
+      hasNextPage: ITEMS_PER_PAGE * page < totalSearch.length,
+      hasPreviousPage: page > 1,
+      nextPage: page + 1,
+      previousPage: page - 1,
+      lastPage: Math.ceil(totalSearch.length/ITEMS_PER_PAGE)
+    });
+  }else{
+    const user = new User({
+      name: name,
+      email: email,
+      password: password1,
+      role: role,
+    });
+    userUtil.saveUser(user)
+    .then( async result => {
+      const usersFinal = await userUtil.findUserPagination(e, n, page, ITEMS_PER_PAGE);
+      const totalSearchFinal = await userUtil.findUser(e, n);
       res.render("backoffice/users", {
         pageTitle: "Users",
         path: "/users",
-        users: users,
+        users: usersFinal,
         success: {
-          status: true,
-          message: "Successfully created user",
+          status: result.status,
+          message: result.message,
+          error: result.error
         },
         mainUser: req.user,
+        email: e, //query email
+        name: n, //query name
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalSearchFinal.length,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalSearchFinal.length/ITEMS_PER_PAGE)
       });
     })
-    .catch(async (err) => {
-      const users = await User.find();
-      res.render("backoffice/users", {
-        pageTitle: "Users",
-        path: "/users",
-        users: users,
-        success: {
-          status: false,
-          message: "Failure to create user",
-          error: err,
-        },
-        mainUser: req.user,
-      });
-      console.log(err);
-    });
+  }
 };
 
 exports.editUser = (req, res) => {
-  console.log(req.params);
+  const page = +req.query.page || 1; //+ to int
+  const e = '';
+  const n = ''
   console.log(req.body);
   const { _method, userId } = req.body;
   if (userId) {
@@ -114,22 +136,31 @@ exports.editUser = (req, res) => {
       userUtil.replaceDeleted(userId, req).then(async (result) => {
         if (result.status === "success") {
           userUtil.deleteUser(userId).then(async (result) => {
-            const users = await User.find();
-            if (result.status === "success") {
-              res.render("backoffice/users", {
-                pageTitle: "Users",
-                path: "/users",
-                users,
-                success: {
-                  status: true,
-                  message: "Successfully deleted user",
-                },
-                mainUser: req.user,
-              });
-            }
+            const users = await userUtil.findUserPagination(e, n, page, ITEMS_PER_PAGE);
+            const totalSearch = await userUtil.findUser(e, n);
+            res.render("backoffice/users", {
+              pageTitle: "Users",
+              path: "/users",
+              users,
+              success: {
+                status: result.status,
+                message: result.message,
+                error: result.error
+              },
+              mainUser: req.user,
+              email: e, //query type
+              name: n, //query name
+              currentPage: page,
+              hasNextPage: ITEMS_PER_PAGE * page < totalSearch.length,
+              hasPreviousPage: page > 1,
+              nextPage: page + 1,
+              previousPage: page - 1,
+              lastPage: Math.ceil(totalSearch.length/ITEMS_PER_PAGE)
+            });
           });
         } else {
-          const users = await User.find();
+          const users = await userUtil.findUserPagination(e, n, page, ITEMS_PER_PAGE);
+          const totalSearch = await userUtil.findUser(e, n);
           res.render("backoffice/users", {
             pageTitle: "Users",
             path: "/users",
@@ -140,6 +171,14 @@ exports.editUser = (req, res) => {
               error: err,
             },
             mainUser: req.user,
+            email: e, //query type
+            name: n, //query name
+            currentPage: page,
+            hasNextPage: ITEMS_PER_PAGE * page < totalSearch.length,
+            hasPreviousPage: page > 1,
+            nextPage: page + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalSearch.length/ITEMS_PER_PAGE)
           });
         }
       });
@@ -150,13 +189,16 @@ exports.editUser = (req, res) => {
 };
 
 exports.changePassword = async (req, res) => {
+  const page = +req.query.page || 1; //+ to int
+  const e = '';
+  const n = ''
   const userId = req.body.userId;
-  const users = await User.find();
+  const users = await userUtil.findUserPagination(e, n, page, ITEMS_PER_PAGE);
+  const totalSearch = await userUtil.findUser(e, n);
   const password = await bcrypt.hash(req.body.password1, 12);
   userUtil
     .passwordReset(userId, password, req.body.changingPassword)
     .then((result) => {
-      // console.log(result);
       if (result.status === "success") {
         if (req.body.changingPassword === "true") {
           res.redirect("/home");
@@ -170,9 +212,17 @@ exports.changePassword = async (req, res) => {
               message: "Successfully altered the password",
             },
             mainUser: req.user,
+            email: e, //query type
+            name: n, //query name
+            currentPage: page,
+            hasNextPage: ITEMS_PER_PAGE * page < totalSearch.length,
+            hasPreviousPage: page > 1,
+            nextPage: page + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalSearch.length/ITEMS_PER_PAGE)
           });
         }
-      } else {
+      }else {
         res.render("backoffice/users", {
           pageTitle: "Users",
           path: "/users",
@@ -183,6 +233,14 @@ exports.changePassword = async (req, res) => {
             error: "Unknown error",
           },
           mainUser: req.user,
+          email: e, //query type
+          name: n, //query name
+          currentPage: page,
+          hasNextPage: ITEMS_PER_PAGE * page < totalSearch.length,
+          hasPreviousPage: page > 1,
+          nextPage: page + 1,
+          previousPage: page - 1,
+          lastPage: Math.ceil(totalSearch.length/ITEMS_PER_PAGE)
         });
       }
     });

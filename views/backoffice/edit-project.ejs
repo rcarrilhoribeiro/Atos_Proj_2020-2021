@@ -5,27 +5,27 @@
     <body>
         <%- include('../includes/navigation.ejs', {role: role}) %>
             <main>
-                <h3>Create a Project</h3>
+                <h3>Edit Project</h3>
                 <div id="mainDiv" class="box-form">
-                    <form id="formCreateProject" autocomplete="off" action="/projects/new-project", method="POST" enctype="multipart/form-data">
+                    <form id="formCreateProject" autocomplete="off" action="/projects/project/<%=project._id%>/edit-project", method="POST">
                         <div class="form-row">
                             <div class="form-group col-md-4">
                                 <label for="inputName">Project's Name</label>
-                                <input type="text" name="name" class="form-control" id="inputName" placeholder="Name" required>
+                                <input type="text" name="name" class="form-control" id="inputName" placeholder="Name" value="<%=project.name%>" required>
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="inputClient">Client</label>
                                 <input
                                     onkeyup="showState('Client;'+this.value, document.getElementById('datalistClient'), this)"
                                     list="datalistClient" autocomplete="off" type="text" name="client" class="form-control"
-                                    id="inputClient" placeholder="Client" >
+                                    id="inputClient" placeholder="Client" value="<%if(project.client){ %> <%=project.client.name %> <%}%>">
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="inputSector">Sector</label>
                                 <input
                                     onkeyup="showState('Sector;'+this.value, document.getElementById('datalistSector'), this)"
                                     list="datalistSector" autocomplete="off" type="text" name="sector" class="form-control"
-                                    id="inputSector" placeholder="Sector">
+                                    id="inputSector" placeholder="Sector" value="<%if(project.sector){%> <%=project.sector.name %> <%}%>">
                             </div>
                         </div>
                         <hr>
@@ -33,15 +33,15 @@
                         <div class="form-row">
                             <div class="form-group col-md-4">
                                 <label for="textAreaDescScope">Scope</label>
-                                <textarea name="scope" style="resize:none" class="form-control" id="textAreaDescScope" rows="3" required></textarea>
+                                <textarea name="scope" style="resize:none" class="form-control" id="textAreaDescScope" rows="3"><%=project.scope%></textarea>
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="textAreaDescInt">Internal Description</label>
-                                <textarea name="internalDescription" style="resize:none" class="form-control" id="textAreaDescInt" rows="3"></textarea>
+                                <textarea name="internalDescription" style="resize:none" class="form-control" id="textAreaDescInt" rows="3"><%=project.internalDescription%></textarea>
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="textAreaDescExt">External Description</label>
-                                <textarea name="externalDescription" style="resize:none" class="form-control" id="textAreaDescExt" rows="3"></textarea>
+                                <textarea name="externalDescription" style="resize:none" class="form-control" id="textAreaDescExt" rows="3"><%=project.externalDescription%></textarea>
                             </div>
                         </div>
                         <hr>
@@ -52,78 +52,97 @@
                                 <input
                                     onkeyup="showState('Office;'+this.value, document.getElementById('datalistOffice'), this)"
                                     list="datalistOffice" autocomplete="off" type="text" name="office" class="form-control"
-                                    id="inputOffice" placeholder="Office">
+                                    id="inputOffice" placeholder="Office" value="<% if(project.office) { %> <%=project.office.name%> <%}%>">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="inputBusiness">Business Area</label>
                                 <input
                                     onkeyup="showState('Business;'+this.value, document.getElementById('datalistBusiness'), this)"
                                     list="datalistBusiness" autocomplete="off" type="text" name="businessAreas" class="form-control"
-                                    id="inputBusiness" placeholder="Business Area">
+                                    id="inputBusiness" placeholder="Business Area" value="<% if(project.bussinessAreas) {%> <%=project.businnessAreas.name%> <%}%>">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="inputType">Project Type</label>
                                 <select name="projectType" id="inputType" class="form-control">
                                   <option selected></option>
-                                  <option>Factory</option>
-                                  <option>Implementation Services</option>
-                                  <option>Maintenance Services</option>
-                                  <option>T&M</option>
+                                  <option <% if(project.projectType == 'Factory') { %> selected <%}%> >Factory</option>
+                                  <option <% if(project.projectType == 'Implementation Services') { %> selected <%}%> >Implementation Services</option>
+                                  <option <% if(project.projectType == 'Maintenance Services') { %> selected <%}%> >Maintenance Services</option>
+                                  <option <% if(project.projectType == 'T&M') { %> selected <%}%> >T&M</option>
                                 </select>
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="inputModel">Project Model</label>
                                 <select name="projectModel" id="inputModel" class="form-control">
                                   <option selected></option>
-                                  <option>On site</option>
-                                  <option>Remote</option>
-                                  <option>Mix</option>
+                                  <option <% if(project.projectModel == 'On site') { %> selected <%}%> >On site</option>
+                                  <option <% if(project.projectModel == 'Remote') { %> selected <%}%> >Remote</option>
+                                  <option <% if(project.projectModel == 'Mix') { %> selected <%}%> >Mix</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-2">
                                 <label for="inputBudget">Budget (€)</label>
-                                <input type="Number" name="budget" class="form-control" id="inputBudge" placeholder="0">
+                                <input type="Number" name="budget" class="form-control" id="inputBudge" placeholder="0" value="<%=project.budget %>">
                             </div>
                             <div class="form-group col-md-2">
                                 <label for="inputDuration">Duration (days)</label>
-                                <input type="Number" name="duration" class="form-control" id="inputDuration" placeholder="0">
+                                <input type="Number" name="duration" class="form-control" id="inputDuration" placeholder="0" value="<%=project.duration %>">
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="inputContact">Contact</label>
-                                <input type="text" name="contactInfo" class="form-control" id="inputContact" placeholder="Email">
+                                <input type="text" name="contactInfo" class="form-control" id="inputContact" placeholder="Email" value="<%=project.contactInfo %>">
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="inputAttachment">Attachment</label>
-                                <textarea style="resize:none" name="attachment" class="form-control" id="inputAttachment" rows="1"></textarea>
+                                <textarea style="resize:none" name="attachment" class="form-control" id="inputAttachment" rows="1"><%=project.attachment %></textarea>
                             </div>
                         </div>
                         <hr>
                         <h5>Technologies</h5>
                         <div id="techRow" class="form-row">
-                            
+                            <% if(project.technology) { 
+                                for(let tech of project.technology) { %>
+                                    <div class="form-group col-md-3">
+                                        <input
+                                            onkeyup="showState('Technology;'+this.value, document.getElementById('datalistTechnology'), this)"
+                                            list="datalistTechnology" autocomplete="off" type="text" name="Technology[]" class="form-control"
+                                            id="inputTechnology" value="<%=tech.name%>">
+                                    </div>
+                                <% } %>
+                            <% } %>
+
                         </div>
                         <button onclick="createRow('techRow', 'Technology');" type="button" class="btn btn-secondary">Add Technology</button> <button type="button" onclick="deleteLast('techRow')" class="btn btn-danger">Delete Technology</button>
                         <hr>
                         <h5>Team Profiles</h5>
                         <div id="profileRow" class="form-row">
-                            
+                            <% if(project.teamProfile) { 
+                                for(let prof of project.teamProfile) { %>
+                                    <div class="form-group col-md-3">
+                                        <input
+                                            onkeyup="showState('Profile;'+this.value, document.getElementById('datalistProfile'), this)"
+                                            list="datalistProfile" autocomplete="off" type="text" name="Profile[]" class="form-control"
+                                            id="inputProfile" value="<%=prof.name%>">
+                                    </div>
+                                <% } %>
+                            <% } %>
                         </div>
                         <button onclick="createRow('profileRow', 'Profile');" type="button" class="btn btn-secondary">Add Profiles</button> <button type="button" onclick="deleteLast('profileRow')" class="btn btn-danger">Delete Profile</button>
                         
                         <hr>
-                        <h5>Project Image</h5>
-                        <div id="uploadFile" class="form-row">
-                            <div class="form-group col-md-4">
-                                <!-- <label class="form-label" for="customFile">Default file input example</label> -->
-                                <input name="logo" type="file" class="form-control" id="customFile" accept="image/*" />
-                            </div>
-                        </div>
-                        <hr>
-                        <button type="submit" class="btn btn-primary">Create Project</button>
+                        <input type="hidden" name="author" value="<%=project.author%>">
+                        <input type="hidden" name="authorEmail" value="<%=project.authorEmail%>">
+                        <button type="submit" class="btn btn-primary">Save Project</button>
                     </form>
                     <br>
+                    <datalist id="datalistTechnology">
+                        <option>Loading...</option>
+                    </datalist>
+                    <datalist id="datalistProfile">
+                        <option>Loading...</option>
+                    </datalist>
                     <datalist id="datalistClient">
                         <option>Loading...</option>
                     </datalist>

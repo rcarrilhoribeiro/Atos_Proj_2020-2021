@@ -18,108 +18,141 @@
                   <%= success.message %>. Reason: <%=success.error %>
                 </strong>
               </div>
-              <% } %>
-                <% } %>
-                  <h3>Search Entities</h3>
-                  <div class="box-form">
-                    <form action="/entities" , method="GET">
-                      <div class="form-row">
-                        <div class="form-group col-md-6">
-                          <label for="FormControlSelect">Type of Entities</label>
-                          <select name="entity" class="form-control category-select" id="FormControlSelect">
-                            <option selected></option>
-                            <% for(let ent of typeOfEntities) { %>
-                              <option id="<%=ent%>">
-                                <%=ent%>
-                              </option>
-                              <% } %>
-                          </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                          <label for="inputName">Name</label>
-                          <input
-                            onkeyup="showState(document.getElementById('FormControlSelect').value + ';' + this.value, document.getElementById('entities'), document.getElementById('inputName'))"
-                            list="entities" autocomplete="off" type="text" name="name" class="form-control"
-                            id="inputName" placeholder="Entity's name">
-                        </div>
-                      </div>
-                      <button type="submit" class="btn btn-primary">Search</button>
-                    </form>
-                    <button id="createEnt" class="btn btn-secondary"><i class="far fa-edit"></i>Create Entity</button>
-                    <br>
-                    <datalist id="entities">
-                      <option>Loading...</option>
-                    </datalist>
-
-                  </div>
-                  <% if(entities) {%>
-                    <div class="results">
-                      <div class="container">
-                        <div class="row">
-                          <div class="col-md-12">
-                            <div class="card">
-                              <div class="card-body">
-                                <h5 class="card-title text-uppercase mb-0">Manage Entities</h5>
-                              </div>
-                              <div class="table-responsive">
-                                <table class="table no-wrap user-table mb-0">
-                                  <thead>
-                                    <tr>
-                                      <th scope="col" class="border-0 text-uppercase font-medium">Name</th>
-                                      <th scope="col" class="border-0 text-uppercase font-medium">Designation</th>
-                                      <th scope="col" class="border-0 text-uppercase font-medium">Added</th>
-                                      <th scope="col" class="border-0 text-uppercase font-medium">Manage</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <% for (let ent of entities) { %>
-                                      <tr>
-                                        <td>
-                                          <form id="editEntityForm" method="POST" action="/entities/entity">
-                                            <input type="text" name="newName" class="font-medium mb-0"
-                                              value="<%=ent.name%>"></input>
-                                        </td>
-                                        <td>
-                                          <span class="text-muted">
-                                            <%=ent.designation%>
-                                          </span><br>
-                                        </td>
-                                        <td>
-                                          <span class="text-muted">
-                                            <%=ent.createdAt.toString().substring(4, 15) %>
-                                          </span>
-                                        </td>
-                                        <td>
-                                          <input type="hidden" name="entityId" value="<%=ent._id%>">
-                                          <input type="hidden" name="_method" value="PATCH" />
-                                          <button type="submit" title="SAVE"
-                                            class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
-                                            <i class="fas fa-edit"></i>
-                                          </button>
-                                          </form>
-                                          <form onsubmit="return confirm('Do you really want to delete this entity?');"
-                                            method="POST" action="/entities/entity">
-                                            <input type="hidden" name="entityId" value="<%=ent._id%>">
-                                            <input type="hidden" name="_method" value="DELETE" />
-                                            <button type="submit" title="DELETE"
-                                              class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
-                                              <i class="fas fa-trash"></i>
-                                            </button>
-                                          </form>
-                                        </td>
-                                        <% } %>
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+            <% } %>
+        <% } %>
+        <h3>Search Entities</h3>
+        <div class="box-form">
+          <form action="/entities" , method="GET">
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="FormControlSelect">Type of Entities</label>
+                <select name="entity" class="form-control category-select" id="FormControlSelect">
+                  <option selected></option>
+                  <% for(let ent of typeOfEntities) { %>
+                    <option id="<%=ent%>">
+                      <%=ent%>
+                    </option>
                     <% } %>
+                </select>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="inputName">Name</label>
+                <input
+                  onkeyup="showState(document.getElementById('FormControlSelect').value + ';' + this.value, document.getElementById('entities'), document.getElementById('inputName'))"
+                  list="entities" autocomplete="off" type="text" name="name" class="form-control"
+                  id="inputName" placeholder="Entity's name">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+          <button id="createEnt" class="btn btn-secondary">Create Entity</button>
+          <br>
+          <datalist id="entities">
+            <option>Loading...</option>
+          </datalist>
+
+        </div>
+        <% if(entities) {%>
+          <div class="results">
+            <div class="container">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title text-uppercase mb-0">Manage Entities</h5>
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table no-wrap user-table mb-0">
+                        <thead>
+                          <tr>
+                            <th scope="col" class="border-0 text-uppercase font-medium">Name</th>
+                            <th scope="col" class="border-0 text-uppercase font-medium">Designation</th>
+                            <th scope="col" class="border-0 text-uppercase font-medium">Added</th>
+                            <th scope="col" class="border-0 text-uppercase font-medium">Manage</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% for (let ent of entities) { %>
+                            <tr>
+                              <td>
+                                <form id="editEntityForm" method="POST" action="/entities/entity">
+                                  <input type="text" name="newName" class="font-medium mb-0"
+                                    value="<%=ent.name%>"></input>
+                              </td>
+                              <td>
+                                <span class="text-muted">
+                                  <%=ent.designation%>
+                                </span><br>
+                              </td>
+                              <td>
+                                <span class="text-muted">
+                                  <%=ent.createdAt.toString().substring(4, 15) %>
+                                </span>
+                              </td>
+                              <td>
+                                <input type="hidden" name="entityId" value="<%=ent._id%>">
+                                <input type="hidden" name="_method" value="PATCH" />
+                                <button type="submit" title="SAVE"
+                                  class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
+                                  <i class="fas fa-edit"></i>
+                                </button>
+                                </form>
+                                <form onsubmit="return confirm('Do you really want to delete this entity?');"
+                                  method="POST" action="/entities/entity">
+                                  <input type="hidden" name="entityId" value="<%=ent._id%>">
+                                  <input type="hidden" name="_method" value="DELETE" />
+                                  <button type="submit" title="DELETE"
+                                    class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2">
+                                    <i class="fas fa-trash"></i>
+                                  </button>
+                                </form>
+                              </td>
+                              <% } %>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+          <section class="d-flex justify-content-center">
+            <nav aria-label="Page navigation example">
+              <ul class="pagination">
+                <!-- <li class="page-item">
+                  <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                </li> -->
+                <%if(currentPage !== 1 && previousPage !== 1) { %> 
+                  <li class="page-item"><a class="page-link" href="/entities?entity=<%=entity%>&name=<%=name%>&page=1">1</a></li> 
+                <% } %>
+                <% if(hasPreviousPage) { %>
+                  <li class="page-item"><a class="page-link" href="/entities?entity=<%=entity%>&name=<%=name%>&page=<%=previousPage%>"><%=previousPage%></a></li>
+                <% } %>
+
+                <li class="page-item active"><a class="page-link" href="/entities?entity=<%=entity%>&name=<%=name%>&page=<%=currentPage%>"><%=currentPage%></a></li>
+                
+                <% if(hasNextPage) { %>
+                  <li class="page-item"><a class="page-link" href="/entities?entity=<%=entity%>&name=<%=name%>&page=<%=nextPage%>"><%=nextPage%></a></li>
+                <% } %>
+                <% if(lastPage !== currentPage && nextPage !== lastPage) { %>
+                  <li class="page-item"><a class="page-link" href="/entities?entity=<%=entity%>&name=<%=name%>&page=<%=lastPage%>"><%=lastPage%></a></li>
+                <% } %>
+                  <!-- <li class="page-item">
+                  <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li> -->
+              </ul>
+            </nav>
+          </section>
+          <% } %>
       </main>
-
-
+      
       <section id="myPopup" class="modal mb-5 text-center">
         <div class="modal-content">
           <span class="close">&times;</span>

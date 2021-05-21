@@ -33,7 +33,7 @@
           </form>
         </div>
         <div class="showResults">
-            <% if(users) { let c=0%>
+            <% if(users) {%>
               <div class="results">
                 <div class="container">
                   <div class="row">
@@ -46,7 +46,6 @@
                           <table class="table no-wrap user-table mb-0">
                             <thead>
                               <tr>
-                                <th scope="col" class="border-0 text-uppercase font-medium pl-4">#</th>
                                 <th scope="col" class="border-0 text-uppercase font-medium">Name</th>
                                 <th scope="col" class="border-0 text-uppercase font-medium">Email</th>
                                 <th scope="col" class="border-0 text-uppercase font-medium">Added</th>
@@ -55,11 +54,8 @@
                               </tr>
                             </thead>
                             <tbody>
-                              <% for (let user of users) { c++ %>
+                              <% for (let user of users) { %>
                                 <tr>
-                                  <td class="pl-4">
-                                    <%= c%>
-                                  </td>
                                   <td>
                                     <h5 class="font-medium mb-0">
                                       <%=user.name%>
@@ -76,11 +72,6 @@
                                     </span>
                                   </td>
                                   <td>
-                                    <!-- <select class="form-control category-select" id="exampleFormControlSelect1">
-                                              <option>Admin</option>
-                                              <option>Internal</option>
-                                              <option>Basic</option>
-                                            </select> -->
                                     <span class="text-muted">
                                       <%=user.role%>
                                     </span>
@@ -116,6 +107,40 @@
                   </div>
                 </div>
               </div>
+              <br>
+              <section class="d-flex justify-content-center">
+                <nav aria-label="Page navigation example">
+                  <ul class="pagination">
+                    <!-- <li class="page-item">
+                      <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                    </li> -->
+                    <%if(currentPage !== 1 && previousPage !== 1) { %> 
+                      <li class="page-item"><a class="page-link" href="/users?email=<%=email%>&name=<%=name%>&page=1">1</a></li> 
+                    <% } %>
+                    <% if(hasPreviousPage) { %>
+                      <li class="page-item"><a class="page-link" href="/users?email=<%=email%>&name=<%=name%>&page=<%=previousPage%>"><%=previousPage%></a></li>
+                    <% } %>
+    
+                    <li class="page-item active"><a class="page-link" href="/users?email=<%=email%>&name=<%=name%>&page=<%=currentPage%>"><%=currentPage%></a></li>
+                    
+                    <% if(hasNextPage) { %>
+                      <li class="page-item"><a class="page-link" href="/users?email=<%=email%>&name=<%=name%>&page=<%=nextPage%>"><%=nextPage%></a></li>
+                    <% } %>
+                    <% if(lastPage !== currentPage && nextPage !== lastPage) { %>
+                      <li class="page-item"><a class="page-link" href="/users?email=<%=email%>&name=<%=name%>&page=<%=lastPage%>"><%=lastPage%></a></li>
+                    <% } %>
+                      <!-- <li class="page-item">
+                      <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Next</span>
+                      </a>
+                    </li> -->
+                  </ul>
+                </nav>
+              </section>
               <% } %>
       </main>
   </body>

@@ -8,18 +8,20 @@ exports.getProjectsList = (req, res) => {
       path: "/projects",
       projects: projects,
       role: req.user.role,
+      success: undefined
     });
   });
 };
 
 exports.getSpecificProjectPage = (req, res) => {
   const { projectId } = req.params;
-  Project.findById(projectId).then((project) => {
+  projectUtil.getProject(projectId).then((project) => {
+    console.log(project);
     res.render("backoffice/project-details", {
       pageTitle: "Project",
       path: "/projects",
       project,
-      role: req.user.role,
+      user: req.user,
       success: undefined,
     });
   });
@@ -28,7 +30,7 @@ exports.getSpecificProjectPage = (req, res) => {
 exports.changeAuthorOfProject = (req, res) => {
   const { projectId } = req.params;
   projectUtil.editProjectCreator(req).then((result) => {
-    if (result.status === "success") {
+    if (result.status === "Success") {
       res.redirect("/projects/project/" + projectId);
     } else {
       Project.findById(projectId).then((project) => {
@@ -36,8 +38,12 @@ exports.changeAuthorOfProject = (req, res) => {
           pageTitle: "Project",
           path: "/projects",
           project,
-          role: req.user.role,
-          success: result,
+          user: req.user,
+          success: {
+            status: false,
+            message: result.message,
+            error: result.err
+          }
         });
       });
     }
@@ -50,4 +56,55 @@ exports.getCreateProjectPage = (req, res) => {
     path: "/projects",
     role: req.user.role,
   });
+}
+
+exports.createProject = async (req, res) => {
+  projectUtil.createProject(req)
+  .then(result => {
+    Project.find().then((projects) => {
+      res.render("backoffice/projects", {
+        pageTitle: "Projects",
+        path: "/projects",
+        projects: projects,
+        role: req.user.role,
+        success: {
+          status: result.status,
+          message: result.message,
+          error: result.err
+        }
+      });
+    });
+  })
+}
+
+exports.getEditProjectPage = (req, res) =>{
+  projectUtil.getProject(req.params.projectId)
+  .then(project => {
+    res.render("backoffice/edit-project", {
+      pageTitle: "Project",
+      path: "/projects",
+      project,
+      role: req.user.role,
+    });
+  })
+}
+
+exports.updateProject = (req, res) => {
+  projectUtil.editProject(req)
+  .then(result => {
+    projectUtil.getProject(req.params.projectId).then(project => {
+      // console.log(project);
+      res.render("backoffice/project-details", {
+        pageTitle: "Project",
+        path: "/projects",
+        project,
+        user: req.user,
+        success: {
+          status: result.status,
+          message: result.message,
+          error: result.err
+        }
+      });
+    });
+  })
 }

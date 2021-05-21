@@ -1,6 +1,5 @@
 // Get the modal
 var modal = document.getElementById("myPopup");
-console.log(modal)
 // Get the button that opens the modal
 var btn = document.getElementById("editAuthor");
 
@@ -26,7 +25,7 @@ window.onclick = function(event) {
 
 
 function check_pass() {
-    if (document.getElementById('newPass').value == document.getElementById('newPassConfirm').value) {
+    if (document.getElementById('newEmail').value == document.getElementById('newEmailConfirm').value) {
         document.getElementById('submit').disabled = false;
         document.getElementById('passP').hidden = true
     } else {

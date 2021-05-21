@@ -13,7 +13,7 @@ exports.getLoginPage = (req, res) => {
 exports.checkUserLogin = async (req,res) => {
     try {
         const { email, password } = req.body;
-        console.log("bod", req.body);
+        console.log("body", req.body);
         const user = await User.findOne({
           email: email,
         }).select("+password");

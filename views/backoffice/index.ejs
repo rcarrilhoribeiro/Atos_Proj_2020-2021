@@ -7,5 +7,30 @@
     <main>
         <h3>Hello <%= mainUser.name%></h3>
         <h4>Welcome to the backoffice</h4>
+
+        <% if(userProjects.length > 0) { %>
+            <br>
+            <h5>Your projects:</h5>
+            <br>
+            <div class="list-group"></div>
+            <% for (let p of userProjects) {%>
+                <a href="/projects/project/<%=p._id%>" class="list-group-item list-group-item-action flex-column align-items-start list-group-item-primary">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1"><%=p.name %></h5>
+                    <small><%=p.createdAt.toString().substring(4, 15) %></small>
+                </div>
+                <p class="mb-1"><%=p.scope%></p>
+                <% if(p.internalDescription) { %> 
+                    <small><%=p.internalDescription%></small>
+                <%}%>
+                </a>
+                <br>
+            <% } %>
+            </div> 
+        <% }else { %>
+            <br>
+            <h5>You have 0 projects</h5>
+        <% } %>
+        
     </main>
 </body>

@@ -1,66 +1,92 @@
 <%- include('../includes/head.ejs') %>
     <link rel="stylesheet" href="/css/popup.css">
     
-
     </head>
-
     <body>
-        <%- include('../includes/navigation.ejs', {role: role}) %>
+        <%- include('../includes/navigation.ejs', {role: user.role}) %>
             <main>
                 <% if(success) {%>
-                    <% if(success.status === 'success') { %>
+                    <% if(success.status === true) { %>
                       <div class="alert alert-success">
                         <strong><%= success.message %></strong>
                       </div>
-                    <% } else if(success.status === 'error') { %> 
+                    <% } else if(success.status === false) { %> 
                       <div class="alert alert-danger">
-                        <strong>'Error'. Reason: <%=success.message %></strong>
+                        <strong><%= success.message %>. Reason: <%=success.error %></strong>
                       </div>
                     <% } %>
-                  <% } %>
+                <% } %>
                 <div class="project-details rounded">
                     <div class="container">
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="project-info-box mt-0">
-                                    <h5>PROJECT DETAILS</h5>
-                                    <p class="mb-0">Vivamus pellentesque, felis in aliquam ullamcorper, lorem tortor
-                                        porttitor erat, hendrerit porta nunc tellus eu lectus. Ut vel imperdiet est.
-                                        Pellentesque condimentum, dui et blandit laoreet, quam nisi tincidunt tortor.</p>
+                                    <h5>PROJECT <%=project.name%>'s DETAILS</h5>
+                                    <p class="mb-0"><b>Scope: </b><%=project.scope %></p>
+                                    <p class="mb-0"><b>Internal Description: </b><%=project.internalDescription %></p>
+                                    <p class="mb-0"><b>External Description: </b><%=project.externalDescription %></p>
                                 </div><!-- / project-info-box -->
 
                                 <div class="project-info-box">
                                     <p><b>Manager:</b> <%=project.author%></p>
                                     <p><b>Manager's Email:</b>
                                         <%=project.authorEmail %>
-                                            <% if(role==='admin') { %> 
+                                            <% if(user.role==='admin') { %> 
                                                 <button id="editAuthor" class="btn btn-light"><i class="far fa-edit"></i></button>
                                             <% } %>
                                     </p>
-                                    <p><b>Client:</b> CUPCAKE CO</p>
-                                    <p><b>Date:</b> 14.02.2020</p>
-                                    <p><b>Designer:</b> James Doe</p>
-                                    <p><b>Tools:</b> Illustrator</p>
-                                    <p class="mb-0"><b>Budget:</b> $500</p>
+                                    <p><b>Sector:</b><%if(project.sector) {%> <%=project.sector.name%> <%}%></p>
+                                    <p><b>Office:</b> <%if(project.office) {%> <%=project.office.name%> <%}%></p>
+                                    <p><b>Date:</b> <%=project.createdAt.toString().substring(4, 15) %></p>
+                                    <p><b>Duration:</b> <%=project.duration%> days</p>
+                                    <p><b>Budget:</b> <%=project.budget %>€</p>
+                                    <p><b>Technologies:</b>
+                                        <% if (project.technology) { %>
+                                            <ul>
+                                                <% project.technology.forEach(element => { %>
+                                                    <li><%=element.name%> </li>
+                                                <% }) %>
+                                            </ul>
+                                        <% } %>
+                                    </p>
+                                    <p><b>Team Profile:</b>
+                                        <% if (project.teamProfile) { %>
+                                            <ul>
+                                                <% project.teamProfile.forEach(element => { %>
+                                                    <li><%=element.name%> </li>
+                                                <% }) %>
+                                            </ul>
+                                        <% } %>
+                                    </p>
                                 </div><!-- / project-info-box -->
 
                                 <!-- / project-info-box -->
                             </div><!-- / column -->
 
                             <div class="col-md-7">
-                                <img src="https://via.placeholder.com/400x300/FFB6C1/000000" alt="project-image"
-                                    class="rounded">
+                                <% if (project.logo) { %>
+                                    <img src="<%=project.logo%>" width="400" height="250" alt="project-image" class="rounded">
+                                <% } else {%>
+                                    <img src="https://via.placeholder.com/400x250/FFB6C1/000000" alt="project-image" class="rounded">
+                                <% } %>
+                                
                                 <div class="project-info-box">
-                                    <p><b>Categories:</b> Design, Illustration</p>
-                                    <p><b>Skills:</b> Illustrator</p>
-                                </div><!-- / project-info-box -->
+                                    <p><b>Client:</b> <%if(project.client) {%> <%=project.client.name%> <%}%></p>
+                                    <p><b>Business Area:</b><%if(project.businessAreas) {%> <%=project.businessAreas.name%> <%}%></p>
+                                    <p><b>Project Model:</b> <%=project.projectModel%></p>
+                                    <p><b>Project Type:</b> <%=project.projectType%></p>
+                                    <p><b>Contact Info:</b> <%=project.contactInfo%></p>
+                                    <p><b>Attachments:</b> <%=project.attachment%></p>
+                                </div>
+                                <%if(user.role === 'admin' || (user.role === 'internal' && user.email === project.authorEmail)){ %>
+                                    <a href="/projects/project/<%=project._id%>/edit-project" class="btn btn-secondary">Edit Project</a>
+                                <% } %>
                             </div><!-- / column -->
                         </div>
                     </div>
                 </div>
+                
             </main>
-
-
 
             <!-- POPUP -->
             <section id="myPopup" class="modal mb-5 text-center">
@@ -71,23 +97,28 @@
                     <form method="POST" action="/projects/project/<%=project._id%>/author">
                         <div class="changePassDiv">
                             <div class="form-group">
-                                <input name="email1" type="email" id="newPass" class="form-control">
-                                <label data-error="wrong" data-success="right" for="newPass">New email</label>
+                                <label for="newEmail">New email</label>
+                                <input 
+                                    onkeyup="showEmails(this.value, document.getElementById('datalistEmails'), this)"
+                                    type="email" id="newEmail" class="form-control" list="datalistEmails" autocomplete="off"
+                                    name="email1" class="form-control" placeholder="Email">
                             </div>
                         
                             <div class="form-group">
-                                <input name="email2" type="email" id="newPassConfirm" class="form-control" onchange='check_pass();'>
-                                <label data-error="wrong" data-success="right" for="newPassConfirm">Confirm email</label>
+                                <label for="newEmailConfirm">Confirm email</label>
+                                <input name="email2" type="email" id="newEmailConfirm" class="form-control" placeholder="Confirm Email" onchange='check_pass();'>
                             </div>
                         </div>
                         <p id="passP" hidden>Emails do not match</p>
                         <button id="submit" type="submit" onsubmit="check_email()" class="btn btn-primary mb-4" disabled>Change Author</button>
                     </form>
-                    
+                    <datalist id="datalistEmails">
+                        <option>Loading...</option>
+                    </datalist>
                 </div>
             </section>
 
-
+            <script src="/js/ajax.js"></script>
             <script src="/js/popup.js"></script>
     </body>
 </html>

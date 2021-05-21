@@ -8,10 +8,12 @@ const supportEntity = new mongoose.Schema({
     required: true,
     minlength: 3,
     maxlength: 20,
+    trim: true,
     unique: [true, 'Entity already exists']
   },
   designation: {
     type: String,
+    trim: true,
     required:  [true, 'Please insert a designation'],
     enum: ['Technology', 'Client', 'Sector', 'Business', 'Office', 'Profile']
   },

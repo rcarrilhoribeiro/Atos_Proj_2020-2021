@@ -6,18 +6,34 @@ exports.deleteUser = async (id) => {
   try {
     await User.findByIdAndDelete(id);
     return {
-      status: "success",
+      status: true,
       message: "User successfully deleted",
     };
   } catch (err) {
     return {
-      status: "fail",
+      status: false,
       message: "Could not delete user",
+      error: err
     };
   }
 };
 
-// TODO -> Pesquisa por email
+exports.saveUser = async (user) => {
+  try {
+    await user.save();
+    return {
+      status: true,
+      message: "User successfully created",
+    };
+  } catch (error) {
+    return {
+      status: false,
+      message: "Failure to create user",
+      error,
+    };
+  }
+}
+
 exports.findUser = async (email, name) => {
   try {
     let users = null;
@@ -33,18 +49,36 @@ exports.findUser = async (email, name) => {
     } else {
       users = await User.find();
     }
-
-    return {
-      status: "success",
-      message: "",
-      users,
-    };
+    return users
   } catch (err) {
     console.log(err);
-    return {
-      status: "fail",
-      message: "No users found with that email",
-    };
+  }
+};
+
+exports.findUserPagination = async (email, name, page, total) => {
+  try {
+    let users = null;
+    if (name) {
+      users = await User.find({
+        $or: [
+          { email: email },
+          { name: { $regex: new RegExp(name.replace(/\s+/g, "\\s+"), "gi") } },
+        ],
+      })
+      .skip((page - 1) * total)
+      .limit(total);
+    } else if (email) {
+      users = await User.find({ email })
+      .skip((page - 1) * total)
+      .limit(total);
+    } else {
+      users = await User.find()
+      .skip((page - 1) * total)
+      .limit(total);
+    }
+    return users
+  } catch (err) {
+    console.log(err);
   }
 };
 
@@ -91,7 +125,7 @@ exports.passwordReset = async (id, password, selfChange) => {
 
 exports.passwordCheck = async (req) => {
   try {
-    console.log("passwordCheck", req.user);
+    // console.log("passwordCheck", req.user);
     const verify = req.user.changedPassword;
     if (!verify) {
       return {

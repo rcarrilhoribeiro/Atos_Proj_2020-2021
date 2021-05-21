@@ -13,7 +13,7 @@ router.post("/users/user", permissions.restrict(["admin"]), userController.editU
 router.get("/users/new-user",permissions.restrict(["admin"]),userController.getCreateUserPage);
 router.post("/users/new-user",permissions.restrict(["admin"]),userController.createUser);
 
-router.get("/users", permissions.restrict(["admin"]), userController.postUsers);
+router.get("/users", permissions.restrict(["admin"]), userController.searchUsers);
 
 router.get("/home", userController.getHomePage);
 
